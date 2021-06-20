@@ -32,30 +32,14 @@ set -o pipefail
 set -eu
 #################################SCRIPT_START##################################
 
-. /opt/ar18/helper_functions/helper_functions.sh
-
+. "${script_dir}/vars"
+if [ ! -v ar18_helper_functions ]; then rm -rf "/tmp/helper_functions_$(whoami)"; cd /tmp; git clone https://github.com/ar18-linux/helper_functions.git; mv "/tmp/helper_functions" "/tmp/helper_functions_$(whoami)"; . "/tmp/helper_functions_$(whoami)/helper_functions/helper_functions.sh"; cd "${script_dir}"; export ar18_helper_functions=1; fi
 obtain_sudo_password
 
-set +u
-export ar18_deployment_target="$(read_target "${1}")"
-set -u
+ar18_install "${install_dir}" "${module_name}" "${script_dir}"
 
-source_or_execute_config "source" "mac_change" "${ar18_deployment_target}"
-source_or_execute_config "source" "mac_change" "ip_to_mac"
-
-#echo "${ar18_sudo_password}" | sudo -Sk systemctl stop NetworkManager
-
-for idx in "${!ar18_interfaces[@]}"; do
-  echo "key  : $idx"
-  echo "value: ${ar18_interfaces[$idx]}"
-  ar18_ip_address="${ar18_interfaces[$idx]}"
-  ar18_mac_address="${ar18_ip_to_mac["${ar18_ip_address}"]}"
-  echo "${ar18_sudo_password}" | sudo -Sk ifconfig "${idx}" down
-  echo "${ar18_sudo_password}" | sudo -Sk macchanger --mac="${ar18_mac_address}" "${idx}"
-  echo "${ar18_sudo_password}" | sudo -Sk ifconfig "${idx}" up
-done
-
-#echo "${ar18_sudo_password}" | sudo -Sk systemctl start NetworkManager
+echo "${ar18_sudo_password}" | sudo -Sk cp -f "${script_dir}/NetworkManager_service_additions.conf" "/etc/systemd/system/multi-user.target.wants/NetworkManager.service.d/pre_exec.conf"
+echo "${ar18_sudo_password}" | sudo -Sk sed -i "s~{{INSTALL_DIR}}~${install_dir}~g" "/etc/systemd/system/multi-user.target.wants/NetworkManager.service.d/pre_exec.conf"
 
 ##################################SCRIPT_END###################################
 # Restore old shell values

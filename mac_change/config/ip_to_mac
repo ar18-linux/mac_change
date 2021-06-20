@@ -1,5 +1,5 @@
-declare -Ag ip_to_mac
-ar18_interfaces=(
+declare -Ag ar18_ip_to_mac
+ar18_ip_to_mac=(
   "192.168.178.104"="11:22:33:44:55"
   "192.168.178.4"="11:22:33:44:56"
 )
