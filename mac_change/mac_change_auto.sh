@@ -34,16 +34,14 @@ set -eu
 
 . /opt/ar18/helper_functions/helper_functions.sh
 
-obtain_sudo_password
-
 set +u
 export ar18_deployment_target="$(read_target "${1}")"
 set -u
 
-source_or_execute_config "source" "mac_change" "${ar18_deployment_target}"
-source_or_execute_config "source" "mac_change" "ip_to_mac"
+. "/opt/ar18/mac_change/config/${ar18_deployment_target}"
+. "/opt/ar18/mac_change/config/ip_to_mac"
 
-echo "${ar18_sudo_password}" | sudo -Sk systemctl stop NetworkManager
+#echo "${ar18_sudo_password}" | sudo -Sk systemctl stop NetworkManager
 
 for idx in "${!ar18_interfaces[@]}"; do
   echo "key  : $idx"
@@ -55,7 +53,7 @@ for idx in "${!ar18_interfaces[@]}"; do
   echo "${ar18_sudo_password}" | sudo -Sk ifconfig "${idx}" up
 done
 
-echo "${ar18_sudo_password}" | sudo -Sk systemctl start NetworkManager
+#echo "${ar18_sudo_password}" | sudo -Sk systemctl start NetworkManager
 
 ##################################SCRIPT_END###################################
 # Restore old shell values
