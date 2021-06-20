@@ -32,13 +32,9 @@ set -o pipefail
 set -eu
 #################################SCRIPT_START##################################
 
-. /opt/ar18/helper_functions/helper_functions.sh
+#. /opt/ar18/helper_functions/helper_functions.sh
 
-set +u
-export ar18_deployment_target="$(read_target "${1}")"
-set -u
-
-. "/opt/ar18/mac_change/config/${ar18_deployment_target}" "/opt/ar18/mac_change/config/ip_to_mac"
+. "/opt/ar18/mac_change/config/{{ar18_deployment_target}}" "/opt/ar18/mac_change/config/ip_to_mac"
 
 #echo "${ar18_sudo_password}" | sudo -Sk systemctl stop NetworkManager
 
