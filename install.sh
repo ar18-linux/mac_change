@@ -38,8 +38,10 @@ obtain_sudo_password
 
 ar18_install "${install_dir}" "${module_name}" "${script_dir}"
 
-echo "${ar18_sudo_password}" | sudo -Sk cp -f "${script_dir}/${module_name}/NetworkManager_service_additions.conf" "/etc/systemd/system/multi-user.target.wants/NetworkManager.service.d/pre_exec.conf"
-echo "${ar18_sudo_password}" | sudo -Sk sed -i "s~{{INSTALL_DIR}}~${install_dir}~g" "/etc/systemd/system/multi-user.target.wants/NetworkManager.service.d/pre_exec.conf"
+ar18_path="/etc/systemd/system/multi-user.target.wants/NetworkManager.service.d/"
+echo "${ar18_sudo_password}" | sudo -Sk mkdir "${ar18_path}"
+echo "${ar18_sudo_password}" | sudo -Sk cp -f "${script_dir}/${module_name}/NetworkManager_service_additions.conf" "${ar18_path}/pre_exec.conf"
+echo "${ar18_sudo_password}" | sudo -Sk sed -i "s~{{INSTALL_DIR}}~${install_dir}~g" "${ar18_path}/pre_exec.conf"
 
 ##################################SCRIPT_END###################################
 # Restore old shell values
