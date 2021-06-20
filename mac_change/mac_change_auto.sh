@@ -34,13 +34,12 @@ set -eu
 
 #. /opt/ar18/helper_functions/helper_functions.sh
 
-. "/opt/ar18/mac_change/config/{{ar18_deployment_target}}" "/opt/ar18/mac_change/config/ip_to_mac"
+. "/opt/ar18/mac_change/config/{{ar18_deployment_target}}" 
+. "/opt/ar18/mac_change/config/ip_to_mac"
 
 #echo "${ar18_sudo_password}" | sudo -Sk systemctl stop NetworkManager
 
 for idx in "${!ar18_interfaces[@]}"; do
-  echo "key  : $idx"
-  echo "value: ${ar18_interfaces[$idx]}"
   ar18_ip_address="${ar18_interfaces[$idx]}"
   ar18_mac_address="${ar18_ip_to_mac["${ar18_ip_address}"]}"
   echo "${ar18_sudo_password}" | sudo -Sk ifconfig "${idx}" down
